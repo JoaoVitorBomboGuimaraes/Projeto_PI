@@ -1,44 +1,36 @@
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class Player extends Sprite {
 
     private Image normalImage;
     private Image shootingImage;
 
-    public Player(double x, double y) {
-        // Inicializa com uma imagem padrão para o construtor do Sprite
-        super("/art/cartman.png", x, y);
+    // Agora recebemos o ID da skin (1, 2, 3 ou 4)
+    public Player(double x, double y, int skinId) {
+        // Carrega a imagem baseada no ID
+        super("/art/skin" + skinId + ".png", x, y);
 
-        this.normalImage = new Image(getClass().getResourceAsStream("/art/cartman.png"));
-        this.shootingImage = new Image(getClass().getResourceAsStream("/art/cartman_atirando.png"));
+        // Carrega as versões normal e atirando daquela skin específica
+        this.normalImage = new Image(getClass().getResourceAsStream("/art/skin" + skinId + ".png"));
+        this.shootingImage = new Image(getClass().getResourceAsStream("/art/skin" + skinId + "_shoot.png"));
 
-        // Define o tamanho fixo para o jogador (ex: 100x100)
-        setFixedSize(100, 100); // --- MUDANÇA: Novo método para definir tamanho fixo ---
-
-        // Garante que a imagem inicial seja a normal
+        setFixedSize(100, 100);
         setImage(false);
     }
 
-    // --- NOVO MÉTODO: Para definir um tamanho fixo de largura e altura ---
-    // Isso garante que o Sprite não mude de tamanho ao trocar de imagem,
-    // apenas a imagem dentro daquele 'quadro' fixo.
     public void setFixedSize(double width, double height) {
         this.view.setFitWidth(width);
         this.view.setFitHeight(height);
-        this.largura = width; // Atualiza a largura para as colisões
-        this.altura = height; // Atualiza a altura para as colisões
+        this.largura = width;
+        this.altura = height;
     }
 
-    // Método para trocar a imagem (agora usando o tamanho fixo)
     public void setImage(boolean isShooting) {
         if (isShooting) {
             this.view.setImage(shootingImage);
         } else {
             this.view.setImage(normalImage);
         }
-        // NÃO precisamos mais ajustar largura/altura aqui, pois setFixedSize já fez isso.
-        // A imagem vai se adaptar ao fitWidth/fitHeight do ImageView.
     }
 
     public void moveLeft() {

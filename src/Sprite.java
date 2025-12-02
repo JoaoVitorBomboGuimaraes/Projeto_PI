@@ -20,12 +20,23 @@ public abstract class Sprite {
         this.altura = image.getHeight();
     }
 
+    // Método que ajusta apenas a largura e calcula a altura (mantém proporção)
     protected void setTamanho(double larguraDesejada) {
         this.view.setFitWidth(larguraDesejada);
         this.view.setPreserveRatio(true);
         double ratio = this.view.getImage().getHeight() / this.view.getImage().getWidth();
         this.largura = larguraDesejada;
         this.altura = larguraDesejada * ratio;
+    }
+
+    // --- NOVO: Método que força largura e altura exatas ---
+    // Isso conserta o erro no BossBullet e no Boss
+    public void setFixedSize(double width, double height) {
+        this.view.setFitWidth(width);
+        this.view.setFitHeight(height);
+        this.view.setPreserveRatio(false); // Permite distorcer se necessário para caber
+        this.largura = width;
+        this.altura = height;
     }
 
     public void setX(double x) {
