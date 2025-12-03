@@ -14,7 +14,7 @@ public class Player extends Sprite {
         this.normalImage = new Image(getClass().getResourceAsStream("/art/skin" + skinId + ".png"));
         this.shootingImage = new Image(getClass().getResourceAsStream("/art/skin" + skinId + "_shoot.png"));
 
-        setFixedSize(100, 100);
+        setFixedSize(83, 103);
         setImage(false);
     }
 

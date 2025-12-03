@@ -12,12 +12,12 @@ public class Boss extends Sprite {
 
         // Define tamanho
         if (isSuperBoss) {
-            setFixedSize(250, 250); // Super Boss é maior
-            this.hp = 100; // Super Boss tem o dobro de vida
+            setFixedSize(460, 184); // Super Boss é maior
+            this.hp = 60; // Super Boss tem o dobro de vida
             this.speedX = 4.5; // E é mais rápido
         } else {
             setFixedSize(200, 200); // Boss Normal
-            this.hp = 50;
+            this.hp = 30;
             this.speedX = 3.0;
         }
     }
