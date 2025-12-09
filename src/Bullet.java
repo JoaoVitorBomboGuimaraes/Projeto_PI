@@ -1,8 +1,8 @@
 public class Bullet extends Sprite {
 
     public Bullet(double x, double y) {
-        super("/art/cartman_tiro.png", x, y);
-        setTamanho(80);
+        super("/art/tiro.png", x, y);
+        setTamanho(6);
     }
 
     public void update() {
