@@ -23,7 +23,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +66,7 @@ public class SouthParkInvaders extends Application {
     private Text bigLevelText = new Text();
     private Text levelUiText = new Text();
 
-    // Pontuação mais curta para progredir mais rápido
+    // Pontuação para progredir
     private int[] scoreThresholds = {
             0, 500, 1200, 2000, 3000, 999999, 4500, 6000, 8000, 10000, 999999
     };
@@ -105,7 +104,7 @@ public class SouthParkInvaders extends Application {
     private AudioClip bossShootSound;
     private AudioClip gameOverSound;
 
-    // --- NOVO: Sons de Dano por Skin ---
+    // Sons de Dano por Skin
     private AudioClip hurtSound1;
     private AudioClip hurtSound2;
     private AudioClip hurtSound3;
@@ -126,6 +125,7 @@ public class SouthParkInvaders extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // Configuração Base
         root.setPrefSize(LARGURA_TELA, ALTURA_TELA);
         root.setClip(new javafx.scene.shape.Rectangle(LARGURA_TELA, ALTURA_TELA));
 
@@ -137,6 +137,7 @@ public class SouthParkInvaders extends Application {
         videoPane.setPrefSize(LARGURA_TELA, ALTURA_TELA);
         videoPane.setStyle("-fx-background-color: black;");
 
+        // Carrega sons
         loadSounds();
 
         // 1. Setup Game Pane
@@ -200,9 +201,11 @@ public class SouthParkInvaders extends Application {
         gameOverView.setFitWidth(LARGURA_TELA); gameOverView.setFitHeight(ALTURA_TELA);
         gameOverPane.getChildren().add(gameOverView);
 
+        // Adiciona tudo ao Root
         root.getChildren().addAll(gamePane, gameOverPane, musicSelectionPane, selectionPane, menuPane, videoPane);
         videoPane.setVisible(false);
 
+        // Tela Cheia
         mainRoot.getChildren().add(root);
         mainRoot.setStyle("-fx-background-color: black;");
 
@@ -238,6 +241,38 @@ public class SouthParkInvaders extends Application {
         primaryStage.show();
     }
 
+    // --- CARREGAMENTO SEGURO DE SONS ---
+    private AudioClip safeLoad(String path) {
+        try {
+            return new AudioClip(getClass().getResource(path).toExternalForm());
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: Arquivo de som não encontrado: " + path);
+            return null;
+        }
+    }
+
+    private void loadSounds() {
+        System.out.println("--- Carregando sons ---");
+        shootSound = safeLoad("/sfx/shoot.mp3");
+        if (shootSound != null) shootSound.setVolume(0.7);
+
+        reloadSound = safeLoad("/sfx/reload.mp3");
+        if (reloadSound != null) reloadSound.setVolume(1.0);
+
+        bossShootSound = safeLoad("/sfx/boss_shoot.mp3");
+        if (bossShootSound != null) bossShootSound.setVolume(0.8);
+
+        gameOverSound = safeLoad("/sfx/gameover.mp3");
+        if (gameOverSound != null) gameOverSound.setVolume(1.0);
+
+        hurtSound1 = safeLoad("/sfx/hurt1.mp3");
+        hurtSound2 = safeLoad("/sfx/hurt2.mp3");
+        hurtSound3 = safeLoad("/sfx/hurt3.mp3");
+        hurtSound4 = safeLoad("/sfx/hurt4.mp3");
+        System.out.println("--- Sons carregados ---");
+    }
+
+    // --- Botão Bonito ---
     private Button criarBotaoEstilizado(String texto) {
         Button btn = new Button(texto);
         btn.setPrefWidth(220); btn.setPrefHeight(60);
@@ -264,24 +299,7 @@ public class SouthParkInvaders extends Application {
         }
     }
 
-    private void loadSounds() {
-        try {
-            shootSound = new AudioClip(getClass().getResource("/sfx/shoot.mp3").toExternalForm());
-            reloadSound = new AudioClip(getClass().getResource("/sfx/reload.mp3").toExternalForm());
-            bossShootSound = new AudioClip(getClass().getResource("/sfx/boss_shoot.mp3").toExternalForm());
-            gameOverSound = new AudioClip(getClass().getResource("/sfx/gameover.mp3").toExternalForm());
-
-            // --- NOVO: Carrega sons de dano das skins ---
-            hurtSound1 = new AudioClip(getClass().getResource("/sfx/hurt1.mp3").toExternalForm());
-            hurtSound2 = new AudioClip(getClass().getResource("/sfx/hurt2.mp3").toExternalForm());
-            hurtSound3 = new AudioClip(getClass().getResource("/sfx/hurt3.mp3").toExternalForm());
-            hurtSound4 = new AudioClip(getClass().getResource("/sfx/hurt4.mp3").toExternalForm());
-
-            shootSound.setVolume(0.7); reloadSound.setVolume(1.0);
-            bossShootSound.setVolume(0.8); gameOverSound.setVolume(1.0);
-        } catch (Exception e) { System.out.println("Aviso: Sons SFX faltando."); }
-    }
-
+    // --- Lógica de Mídia ---
     private void playBackgroundMusic() {
         try {
             if (backgroundMusicPlayer != null) { backgroundMusicPlayer.stop(); backgroundMusicPlayer.dispose(); }
@@ -321,6 +339,7 @@ public class SouthParkInvaders extends Application {
         if (onVideoFinished != null) { Runnable action = onVideoFinished; onVideoFinished = null; action.run(); }
     }
 
+    // --- Setup UI SELEÇÃO DE PERSONAGEM (Centralizada) ---
     private void setupSelectionScreenUI() {
         Image bgSelection = new Image(getClass().getResourceAsStream("/art/Background.jpg"));
         ImageView bgViewSel = new ImageView(bgSelection);
@@ -353,6 +372,7 @@ public class SouthParkInvaders extends Application {
         }
     }
 
+    // --- Setup UI SELEÇÃO DE MÚSICA ---
     private void setupMusicSelectionScreenUI() {
         Image bgMusic = new Image(getClass().getResourceAsStream("/art/Background.jpg"));
         ImageView bgViewMusic = new ImageView(bgMusic);
@@ -386,6 +406,7 @@ public class SouthParkInvaders extends Application {
         }
     }
 
+    // --- Navegação ---
     private void showMenu() {
         stopBackgroundMusic();
         menuPane.setVisible(true); selectionPane.setVisible(false); musicSelectionPane.setVisible(false);
@@ -414,8 +435,14 @@ public class SouthParkInvaders extends Application {
         gameOverPane.setVisible(true); gamePane.setVisible(false); menuPane.setVisible(false);
         gameOverPane.toFront();
     }
-    private void winGame() { stopBackgroundMusic(); playVideo("final.mp4", () -> gameOver()); }
 
+    // --- CORREÇÃO: Vitória volta para o MENU ---
+    private void winGame() {
+        stopBackgroundMusic();
+        playVideo("final.mp4", () -> showMenu());
+    }
+
+    // --- Update Loop ---
     private void update(long now) {
         if (isTransitioning) { return; }
         handleInput(); checkReload(); checkLevelProgression();
@@ -590,12 +617,13 @@ public class SouthParkInvaders extends Application {
 
     private void perderVida() {
         lives--;
-        // --- NOVO: Toca som de dano dependendo da skin ---
+        // --- Toca som de dano ao perder vida ---
+        System.out.println("DEBUG: Perdeu vida! Skin ID: " + selectedSkinId);
         switch (selectedSkinId) {
-            case 1: if (hurtSound1 != null) hurtSound1.play(); break;
-            case 2: if (hurtSound2 != null) hurtSound2.play(); break;
-            case 3: if (hurtSound3 != null) hurtSound3.play(); break;
-            case 4: if (hurtSound4 != null) hurtSound4.play(); break;
+            case 1: if (hurtSound1 != null) hurtSound1.play(); else System.out.println("❌ Som hurt1 não carregado"); break;
+            case 2: if (hurtSound2 != null) hurtSound2.play(); else System.out.println("❌ Som hurt2 não carregado"); break;
+            case 3: if (hurtSound3 != null) hurtSound3.play(); else System.out.println("❌ Som hurt3 não carregado"); break;
+            case 4: if (hurtSound4 != null) hurtSound4.play(); else System.out.println("❌ Som hurt4 não carregado"); break;
         }
 
         if (!lifeIcons.isEmpty()) {
